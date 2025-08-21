@@ -10,7 +10,7 @@ function displayCart() {
     // Cart items (left column)
     let cartItemsHTML = cart.map(product => `
         <div class="border p-3 mx-3 mt-0 d-flex align-items-center">
-            <img src="${product.image}" style="width: 60px; height: 60px; object-fit: contain;" class="me-3">
+            <img src="${product.image}" style="height : 120px; object-fit: contain;" class="me-3">
             <div>
                 <b>${product.title}</b>
                 <p class="mb-0">$${product.price.toFixed(2)}</p>
