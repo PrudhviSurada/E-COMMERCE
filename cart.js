@@ -8,19 +8,26 @@ function displayCart() {
     }
 
     // Cart items (left column)
-    let cartItemsHTML = cart.map(product => `
+    let cartItemsHTML = cart.map((product, index) => `
         <div class="border p-3 mx-3 mt-0 d-flex align-items-center">
-            <img src="${product.image}" style="height : 120px; object-fit: contain;" class="me-3">
-            <div>
-                <b>${product.title}</b>
-                <p class="mb-0">$${product.price.toFixed(2)}</p>
+            <img src="${product.image}" style="height:160px; object-fit:contain;" class="ms-4">
+            <div class="flex-grow-1 text-center p-2">
+                <h5>${product.title}</h5>
+            </div>
+            <div class="me-3">
+                <div class="d-flex align-items-center justify-content-around">
+                    <button class="btn btn-sm btn-outline-dark me-2" onclick="updateQuantity(${index}, 'decrement')">-</button>
+                    <span>${product.quantity || 1}</span>
+                    <button class="btn btn-sm btn-outline-dark ms-2" onclick="updateQuantity(${index}, 'increment')">+</button>
+                </div>
+                <p class="m-3">$${(product.price * (product.quantity || 1)).toFixed(2)}</p>
             </div>
         </div>
     `).join("");
 
     // Order Summary (right column)
-    let totalItems = cart.length;
-    let productsTotal = cart.reduce((sum, item) => sum + item.price, 0);
+    let totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    let productsTotal = cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
     let shipping = totalItems * 5;
     let grandTotal = productsTotal + shipping;
 
@@ -55,6 +62,35 @@ function displayCart() {
             </div>
         </div>
     `;
+
+    // Reattach checkout button event
+    document.getElementById("checkoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("cart");
+        alert("Thank you for your purchase!");
+        emptyCart();
+    });
+}
+
+function updateQuantity(index, action) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let product = cart[index];
+
+    // If product has no quantity yet, set default = 1
+    if (!product.quantity) product.quantity = 1;
+
+    if (action === "increment") {
+        product.quantity++;
+    } else if (action === "decrement") {
+        product.quantity--;
+        // Remove item if quantity is 0 or less
+        if (product.quantity <= 0) {
+            cart.splice(index, 1);
+        }
+    }
+
+    // Save back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+    displayCart();
 }
 
 function emptyCart() {
@@ -67,13 +103,3 @@ function emptyCart() {
 }
 
 displayCart();
-
-//clearing the cart items
-document.getElementById("checkoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("cart");
-    alert("Thank you for your purchase!");
-    emptyCart();
-});
-
-
-//increment and decrement functionality should be added

@@ -63,10 +63,15 @@ document.addEventListener("click", (e) => {
 
         if (product) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            cart.push(product);
-            localStorage.setItem("cart", JSON.stringify(cart));
-
-            alert(`${product.title.substring()} added to cart!`);
+            // Check if product already exists in cart
+            const exists = cart.some(item => item.id === productId);
+            if (exists) {
+                alert("This item is already in your cart!");
+            } else {
+                cart.push(product);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                alert(`${product.title} added to cart!`);
+            }
         }
     }
 });
